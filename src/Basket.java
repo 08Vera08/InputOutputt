@@ -1,14 +1,14 @@
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 class Basket {
-    private static ArrayList<Integer> prices;
-    private static ArrayList<Integer> counts;
-    private static ArrayList<String> products;
+    private ArrayList<Integer> prices;
+    private ArrayList<Integer> counts;
+    private ArrayList<String> products;
     private static int amount;
 
-    Basket(){
+    Basket() {
 
     }
 
@@ -28,41 +28,42 @@ class Basket {
         return products.get(num);
     }
 
-    public static void setProduct(int num, String product) {
-        if(num < amount) {
+    public void setProduct(int num, String product) {
+        if (num < amount) {
             products.set(num, product);
-        }
-        else{
+        } else {
             products.add(product);
             amount++;
         }
     }
 
-    public static void setPrice(int num, int price) {
-        if(num < amount) {
+    public void setPrice(int num, int price) {
+        if (num < amount) {
             prices.set(num, price);
-        }
-        else{
+        } else {
             prices.add(price);
         }
     }
 
-    public static void setCount(int num, int count) {
-        if(num < amount) {
+    public void setCount(int num, int count) {
+        if (num < amount) {
             counts.set(num, count);
-        }
-        else{
+        } else {
             counts.add(count);
         }
     }
-    public static void setAmount(int count) {
+
+    public void setAmount(int count) {
         amount = count;
     }
 
     public int getCount(int num) {
         return counts.get(num);
     }
-    public int getSize(){return amount;}
+
+    public int getSize() {
+        return amount;
+    }
 
     public int getPrice(int num) {
         return prices.get(num);
@@ -79,27 +80,27 @@ class Basket {
     }
 
     public static Basket loadFromTxtFile(File textFile) {
+        ArrayList<Integer> price = new ArrayList<Integer>();
+        ArrayList<Integer> count = new ArrayList<Integer>();
+        ArrayList<String> product = new ArrayList<String>();
         try {
             Scanner myReader = new Scanner(textFile);
-            prices = new ArrayList<Integer>();
-            counts = new ArrayList<Integer>();
-            products = new ArrayList<String>();
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String arr[] = data.split(" ");
                 amount = arr.length;
                 for (int i = 0; i < arr.length; i++) {
-                    products.add(arr[i]);
+                    product.add(arr[i]);
                 }
                 data = myReader.nextLine();
                 arr = data.split(" ");
                 for (int i = 0; i < arr.length; i++) {
-                    counts.add(Integer.valueOf(arr[i]));
+                    count.add(Integer.valueOf(arr[i]));
                 }
                 data = myReader.nextLine();
                 arr = data.split(" ");
                 for (int i = 0; i < arr.length; i++) {
-                    prices.add(Integer.valueOf(arr[i]));
+                    price.add(Integer.valueOf(arr[i]));
                 }
             }
             myReader.close();
@@ -108,7 +109,7 @@ class Basket {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-        return new Basket(prices, counts, products, amount);
+        return new Basket(price, count, product, amount);
     }
 
     public void saveTxt(File textFile) {
@@ -132,85 +133,72 @@ class Basket {
             e.printStackTrace();
         }
     }
-    public void saveBin(File file){
+
+    public void saveBin(File file) {
         String s = "";
         System.out.println("In save: " + products.get(0) + " " + prices.get(0) + " " + counts.get(0));
-        for(int i = 0; i < amount; ++i){
+        for (int i = 0; i < amount; ++i) {
             s += String.valueOf(products.get(i)) + " ";
         }
         s += '\n';
-        for(int i = 0; i < amount; ++i){
+        for (int i = 0; i < amount; ++i) {
             s += String.valueOf(counts.get(i)) + " ";
         }
         s += '\n';
-        for(int i = 0; i < amount; ++i){
+        for (int i = 0; i < amount; ++i) {
             s += String.valueOf(prices.get(i)) + " ";
         }
         try {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(s.getBytes(), 0, s.getBytes().length);
             fos.close();
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public static Basket loadFromBinFile(File file){
-        try
-        {
-            byte[] buffer = new byte[(int)file.length()];
-            FileInputStream fin=new FileInputStream(file);
-            System.out.println("File data:");
 
+    public static Basket loadFromBinFile(File file) {
+        ArrayList<String> products = new ArrayList<>();
+        ArrayList<Integer> counts = new ArrayList<>();
+        ArrayList<Integer> prices = new ArrayList<>();
+        try {
+            byte[] buffer = new byte[(int) file.length()];
+            FileInputStream fin = new FileInputStream(file);
+            System.out.println("File data:");
             int count, k = 0, j = 0;
             String s[] = new String[3];
             fin.read(buffer, 0, buffer.length);
-            while(j < buffer.length){
-                if(buffer[j] == '\n') {
+            while (j < buffer.length) {
+                if (buffer[j] == '\n') {
                     k++;
-                }
-                else {
-                    s[k] += (char)buffer[j];
+                } else {
+                    s[k] += (char) buffer[j];
                 }
                 j++;
             }
-//            while((count=fin.read(buffer))!=-1) {
-//                while(j < count) {
-//                    if ((char) buffer[j] == '\n') {
-//                        k++;
-//                    } else {
-//                        s[k] += (char) buffer[j];
-//                    }
-//                    j++;
-//                }
-//            }
             System.out.println(s[0] + '\n' + s[1] + '\n' + s[2]);
 
             String arr[] = s[0].split(" ");
-            for(int i = 0; i < arr.length; ++i) System.out.print(arr[i] + " ");
+            for (int i = 0; i < arr.length; ++i) System.out.print(arr[i] + " ");
             amount = arr.length;
-            products = new ArrayList<String>();
-            for(int i = 0; i < arr.length; ++i){
+            for (int i = 0; i < arr.length; ++i) {
                 products.add(String.valueOf(arr[i].replace("null", "")));
             }
 
             arr = s[1].split(" ");
-            for(int i = 0; i < arr.length; ++i) System.out.print('\n' + arr[i] + " ");
-            counts = new ArrayList<Integer>();
-            for(int i = 0; i < arr.length; ++i){
+            for (int i = 0; i < arr.length; ++i) System.out.print('\n' + arr[i] + " ");
+            for (int i = 0; i < arr.length; ++i) {
                 String str = "";
                 counts.add(Integer.valueOf(arr[i].replace("null", "")));
             }
 
             arr = s[2].split(" ");
-            for(int i = 0; i < arr.length; ++i) System.out.print('\n' + arr[i] + " ");
-            prices = new ArrayList<Integer>();
-            for(int i = 0; i < arr.length; ++i){
+            for (int i = 0; i < arr.length; ++i) System.out.print('\n' + arr[i] + " ");
+            for (int i = 0; i < arr.length; ++i) {
                 prices.add(Integer.valueOf(arr[i].replace("null", "")));
             }
             fin.close();
-        }
-        catch(IOException ex){
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
         return new Basket(prices, counts, products, amount);
